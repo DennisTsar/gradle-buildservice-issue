@@ -12,6 +12,18 @@ jobs:
       with:
         distribution: 'zulu'
         java-version: 11
-    - uses: gradle/gradle-build-action@v2
-      with:
-        arguments: help --info
+    - run: |
+        ./gradlew issue:help --configuration-cache
+        ./gradlew issue:help --configuration-cache
+        touch issue/test.txt
+        ./gradlew issue:help --configuration-cache
+        rm issue/test.txt
+        ./gradlew issue:help --configuration-cache
+        sed -i 's/include(":a-test")/\/\/include(":a-test")/' settings.gradle.kts
+        sed -i 's/\/\/include(":z-test")/include(":z-test")/' settings.gradle.kts
+        ./gradlew issue:help --configuration-cache
+        ./gradlew issue:help --configuration-cache
+        touch issue/test.txt
+        ./gradlew issue:help --configuration-cache
+        rm issue/test.txt
+        ./gradlew issue:help --configuration-cache
