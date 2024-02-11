@@ -18,8 +18,10 @@ jobs:
         ./gradlew issue:help --configuration-cache
         ./gradlew issue:help --configuration-cache
         touch issue/test.txt
+        echo "created test.txt"
         ./gradlew issue:help --configuration-cache
         rm issue/test.txt
+        echo "removed test.txt"
         ./gradlew issue:help --configuration-cache
 
     - name: Switch modules # remove a-test, add z-test
@@ -32,6 +34,8 @@ jobs:
         ./gradlew issue:help --configuration-cache
         ./gradlew issue:help --configuration-cache
         touch issue/test.txt
+        echo "created test.txt"
         ./gradlew issue:help --configuration-cache
         rm issue/test.txt
+        echo "removed test.txt"
         ./gradlew issue:help --configuration-cache
