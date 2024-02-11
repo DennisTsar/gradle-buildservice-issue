@@ -1,5 +1,5 @@
-# Run working case first, then failing case
-name: Run reproducer on each commit
+# Run failing case first, then working case
+name: Run alt reproducer on each commit
 on: push
 jobs:
   gradle:
@@ -13,7 +13,13 @@ jobs:
       with:
         distribution: 'zulu'
         java-version: 11
-    - name: Working Case (issue module is alphabetically last)
+
+    - name: Switch modules # remove a-test, add z-test
+      run: |
+        sed -i 's/include(":a-test")/\/\/include(":a-test")/' settings.gradle.kts
+        sed -i 's/\/\/include(":z-test")/include(":z-test")/' settings.gradle.kts
+
+    - name: Failing Case (issue module is alphabetically first)
       run: |
         ./gradlew issue:help --configuration-cache
         ./gradlew issue:help --configuration-cache
@@ -22,12 +28,12 @@ jobs:
         rm issue/test.txt
         ./gradlew issue:help --configuration-cache
 
-    - name: Switch modules # remove a-test, add z-test
+    - name: Switch modules back # remove z-test, add a-test
       run: |
-        sed -i 's/include(":a-test")/\/\/include(":a-test")/' settings.gradle.kts
-        sed -i 's/\/\/include(":z-test")/include(":z-test")/' settings.gradle.kts
+        sed -i 's/\/\/include(":a-test")/include(":a-test")/' settings.gradle.kts
+        sed -i 's/include(":z-test")/\/\/include(":z-test")/' settings.gradle.kts
 
-    - name: Failing Case (issue module is alphabetically first)
+    - name: Working Case (issue module is alphabetically last)
       run: |
         ./gradlew issue:help --configuration-cache
         ./gradlew issue:help --configuration-cache
