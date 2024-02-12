@@ -1,5 +1,5 @@
-# Run failing case first, then working case
-name: Run alt reproducer on each commit
+# If the failing case is modified to have the "issue" module apply the test-plugin, the issue is solved
+name: Run reproducer-3 on each commit
 on: push
 jobs:
   gradle:
@@ -19,23 +19,11 @@ jobs:
         sed -i 's/include(":a-test")/\/\/include(":a-test")/' settings.gradle.kts
         sed -i 's/\/\/include(":z-test")/include(":z-test")/' settings.gradle.kts
 
-    - name: Failing Case (issue module is alphabetically first)
+    - name: Add test-plugin to issue module
       run: |
-        ./gradlew issue:help --configuration-cache
-        ./gradlew issue:help --configuration-cache
-        touch issue/test.txt
-        echo "created test.txt"
-        ./gradlew issue:help --configuration-cache
-        rm issue/test.txt
-        echo "removed test.txt"
-        ./gradlew issue:help --configuration-cache
+        sed -i '4i plugins { id("com.example.test-plugin") }' issue/build.gradle.kts
 
-    - name: Switch modules back # remove z-test, add a-test
-      run: |
-        sed -i 's/\/\/include(":a-test")/include(":a-test")/' settings.gradle.kts
-        sed -i 's/include(":z-test")/\/\/include(":z-test")/' settings.gradle.kts
-
-    - name: Working Case (issue module is alphabetically last)
+    - name: Working Case (despite alphabetical order)
       run: |
         ./gradlew issue:help --configuration-cache
         ./gradlew issue:help --configuration-cache
