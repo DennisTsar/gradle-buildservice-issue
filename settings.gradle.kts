@@ -6,5 +6,5 @@ rootProject.name = "reproducer-project"
 
 
 include(":issue")
-include(":a-test")
-//include(":z-test")
+//include(":a-test")
+include(":z-test")

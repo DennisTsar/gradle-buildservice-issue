@@ -1,4 +1,4 @@
-# Run failing case first, then working case
+# Run failing case first, then working case, to rule out caching issues
 name: Run reproducer-2 on each commit
 on: push
 jobs:
@@ -14,10 +14,10 @@ jobs:
         distribution: 'zulu'
         java-version: 11
 
-    - name: Switch modules # remove a-test, add z-test
+    - name: Switch modules # remove z-test, add a-test
       run: |
-        sed -i 's/include(":a-test")/\/\/include(":a-test")/' settings.gradle.kts
-        sed -i 's/\/\/include(":z-test")/include(":z-test")/' settings.gradle.kts
+        sed -i 's/include(":z-test")/\/\/include(":z-test")/' settings.gradle.kts
+        sed -i 's/\/\/include(":a-test")/include(":a-test")/' settings.gradle.kts
 
     - name: Failing Case (issue module is alphabetically first)
       run: |
@@ -30,10 +30,10 @@ jobs:
         echo "removed test.txt"
         ./gradlew issue:help --configuration-cache
 
-    - name: Switch modules back # remove z-test, add a-test
+    - name: Switch modules back # remove a-test, add z-test
       run: |
-        sed -i 's/\/\/include(":a-test")/include(":a-test")/' settings.gradle.kts
-        sed -i 's/include(":z-test")/\/\/include(":z-test")/' settings.gradle.kts
+        sed -i 's/\/\/include(":z-test")/include(":z-test")/' settings.gradle.kts
+        sed -i 's/include(":a-test")/\/\/include(":a-test")/' settings.gradle.kts
 
     - name: Working Case (issue module is alphabetically last)
       run: |

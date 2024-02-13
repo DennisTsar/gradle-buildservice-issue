@@ -14,11 +14,6 @@ jobs:
         distribution: 'zulu'
         java-version: 11
 
-    - name: Switch modules # remove a-test, add z-test
-      run: |
-        sed -i 's/include(":a-test")/\/\/include(":a-test")/' settings.gradle.kts
-        sed -i 's/\/\/include(":z-test")/include(":z-test")/' settings.gradle.kts
-
     - name: Add test-plugin to issue module
       run: |
         sed -i '4i plugins { id("com.example.test-plugin") }' issue/build.gradle.kts
