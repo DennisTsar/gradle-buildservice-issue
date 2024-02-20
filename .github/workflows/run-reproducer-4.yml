@@ -1,0 +1,41 @@
+# Run working case first, then failing case
+name: Run reproducer on each commit
+on: push
+jobs:
+  gradle:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest] # macos-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-java@v2
+      with:
+        distribution: 'zulu'
+        java-version: 11
+    - name: Failing Case (issue module is alphabetically first)
+      run: |
+        ./gradlew issue:myTask --configuration-cache
+        ./gradlew issue:myTask --configuration-cache
+        touch issue/test.txt
+        echo "created test.txt"
+        ./gradlew issue:myTask --configuration-cache
+        rm issue/test.txt
+        echo "removed test.txt"
+        ./gradlew issue:myTask --configuration-cache
+
+    - name: Switch modules # remove z-test, add a-test
+      run: |
+        sed -i 's/include(":z-test")/\/\/include(":z-test")/' settings.gradle.kts
+        sed -i 's/\/\/include(":a-test")/include(":a-test")/' settings.gradle.kts
+
+    - name: Working Case (issue module is alphabetically last)
+      run: |
+        ./gradlew issue:myTask --configuration-cache
+        ./gradlew issue:myTask --configuration-cache
+        touch issue/test.txt
+        echo "created test.txt"
+        ./gradlew issue:myTask --configuration-cache
+        rm issue/test.txt
+        echo "removed test.txt"
+        ./gradlew issue:myTask --configuration-cache
